@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        ">
+    <bean class="com.mchange.v2.c3p0.ComboPooledDataSource" id="dataSource">
+        <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/schoolmanager?characterEncoding=utf-8"/>
+        <property name="user" value="root"/>
+        <property name="password" value="123456"/>
+    </bean>
+    <bean class="org.mybatis.spring.SqlSessionFactoryBean" id="sqlSessionFactory">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="mapperLocations" value="classpath:com/qf/mapper/*.xml"/>
+        <property name="typeAliasesPackage" value="com.qf.pojo"/>
+    </bean>
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.qf.mapper"/>
+    </bean>
+
+    <bean class="org.activiti.engine.impl.cfg.StandaloneProcessEngineConfiguration" id="processEngineConfiguration">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="databaseSchemaUpdate" value="true"/>
+    </bean>
+    <bean class="org.activiti.spring.ProcessEngineFactoryBean" id="processEngine">
+        <property name="processEngineConfiguration" ref="processEngineConfiguration"/>
+    </bean>
+    <bean factory-bean="processEngine" factory-method="getRepositoryService" id="repositoryService"/>
+    <bean factory-bean="processEngine" factory-method="getRuntimeService" id="runtimeService"/>
+    <bean factory-bean="processEngine" factory-method="getTaskService" id="taskService"/>
+    <bean factory-bean="processEngine" factory-method="getHistoryService" id="historyService"/>
+</beans>
